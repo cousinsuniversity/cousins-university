@@ -1,372 +1,383 @@
-// School Portal - Student Access System
-class SchoolPortal {
-    constructor() {
-        this.currentStudent = null;
-        this.studentData = {};
-        this.init();
-    }
+// Replace entire portal.js file with this code
 
-    init() {
-        this.loadStudentData();
-        this.setupEventListeners();
-        this.checkForNotifications();
+document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication
+    if (!checkPortalAuth()) {
+        window.location.href = 'index.html';
+        return;
     }
+    
+    // Load student data
+    loadStudentData();
+    
+    // Initialize navigation
+    initializeNavigation();
+    
+    // Load reports data
+    loadReportsData();
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Update system status
+    updateSystemStatus();
+});
 
-    loadStudentData() {
-        // Load student data from localStorage or session
-        const studentSession = sessionStorage.getItem('studentSession');
-        if (studentSession) {
-            this.currentStudent = JSON.parse(studentSession);
-            this.showDashboard();
+// Enhanced authentication check
+function checkPortalAuth() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const sessionData = JSON.parse(localStorage.getItem('studentSession') || '{}');
+    
+    if (isLoggedIn !== 'true' || !sessionData.id) {
+        return false;
+    }
+    
+    // Check session expiration (24 hours)
+    if (sessionData.timestamp) {
+        const sessionTime = new Date(sessionData.timestamp);
+        const now = new Date();
+        const hoursDiff = Math.abs(now - sessionTime) / 36e5;
+        
+        if (hoursDiff > 24) {
+            localStorage.clear();
+            return false;
         }
     }
+    
+    return true;
+}
 
-    setupEventListeners() {
-        // Login form
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.loginStudent();
-            });
+// Load and display student data
+function loadStudentData() {
+    const sessionData = JSON.parse(localStorage.getItem('studentSession') || '{}');
+    
+    // Update display elements
+    const studentNameEl = document.getElementById('studentName');
+    const studentIdEl = document.getElementById('studentIdDisplay');
+    const profileNameEl = document.getElementById('profileName');
+    
+    if (studentNameEl) studentNameEl.textContent = sessionData.name || 'Student';
+    if (studentIdEl) studentIdEl.textContent = sessionData.id || 'CU000000';
+    if (profileNameEl) profileNameEl.textContent = sessionData.name || 'Student';
+    
+    // Update page title
+    document.title = `Cousins University - ${sessionData.name || 'Student Portal'}`;
+}
+
+// Initialize navigation
+function initializeNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
+    const currentHash = window.location.hash || '#dashboard';
+    
+    navItems.forEach(item => {
+        const link = item.querySelector('a');
+        if (link.getAttribute('href') === currentHash) {
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
         }
-
-        // Navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const section = link.getAttribute('href').substring(1);
-                this.showSection(section);
-            });
+        
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = this.getAttribute('href');
+            
+            // Update active state
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            
+            // Load section content
+            loadSection(target.substring(1));
         });
+    });
+}
+
+// Load section content
+function loadSection(section) {
+    console.log(`Loading section: ${section}`);
+    
+    // Update breadcrumb
+    const breadcrumb = document.querySelector('.breadcrumb');
+    if (breadcrumb) {
+        breadcrumb.innerHTML = `<span>Home</span> / <span>${capitalizeFirst(section)}</span>`;
     }
-
-    loginStudent() {
-        const studentId = document.getElementById('studentId').value;
-        const password = document.getElementById('password').value;
-
-        // For demo purposes - in production, this would validate against stored data
-        if (studentId && password) {
-            // Simulate API call
-            this.authenticateStudent(studentId, password);
-        } else {
-            this.showAlert('Please enter your Student ID and password', 'error');
-        }
-    }
-
-    authenticateStudent(studentId, password) {
-        // In a real system, this would be an API call
-        // For now, simulate with localStorage data
-        const schoolData = JSON.parse(localStorage.getItem('schoolData') || '{}');
-        const student = schoolData.students?.find(s => s.id === studentId);
-        
-        if (student) {
-            // Store session
-            this.currentStudent = student;
-            sessionStorage.setItem('studentSession', JSON.stringify(student));
-            this.showDashboard();
-            this.showAlert('Login successful!', 'success');
-        } else {
-            this.showAlert('Invalid Student ID or password', 'error');
-        }
-    }
-
-    showDashboard() {
-        // Hide login section
-        document.getElementById('loginSection').style.display = 'none';
-        
-        // Show dashboard
-        const dashboard = document.getElementById('dashboardSection');
-        dashboard.style.display = 'block';
-        
-        // Update student info
-        document.getElementById('studentNameDisplay').textContent = this.currentStudent.name;
-        document.getElementById('studentIdDisplay').textContent = this.currentStudent.id;
-        document.getElementById('gradeLevelDisplay').textContent = this.currentStudent.gradeLevel || 'Not assigned';
-        
-        // Load dashboard data
-        this.loadDashboardData();
-    }
-
-    loadDashboardData() {
-        // Load academic data
-        this.loadAcademicSummary();
-        this.loadTodaySchedule();
-        this.loadNotifications();
-        this.loadGradesPreview();
-        this.loadUpcomingAssignments();
-    }
-
-    loadAcademicSummary() {
-        // Load GPA and other academic stats
-        // This would come from the data store
-        document.getElementById('currentGPA').textContent = '3.75';
-        document.getElementById('totalSubjects').textContent = '8';
-        document.getElementById('attendanceRate').textContent = '95%';
-    }
-
-    loadTodaySchedule() {
-        const scheduleContainer = document.getElementById('todaysSchedule');
-        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-        
-        const schedule = [
-            { time: '8:00 AM', subject: 'Mathematics', room: 'Room 101' },
-            { time: '9:30 AM', subject: 'English', room: 'Room 102' },
-            { time: '11:00 AM', subject: 'Science', room: 'Lab 201' },
-            { time: '1:00 PM', subject: 'History', room: 'Room 103' },
-            { time: '2:30 PM', subject: 'Physical Education', room: 'Gym' }
-        ];
-        
-        scheduleContainer.innerHTML = schedule.map(item => `
-            <div class="schedule-item">
-                <div class="schedule-time">${item.time}</div>
-                <div class="schedule-details">
-                    <strong>${item.subject}</strong>
-                    <div class="schedule-room">${item.room}</div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    loadNotifications() {
-        const notificationsContainer = document.getElementById('studentNotifications');
-        
-        const notifications = [
-            { type: 'info', message: 'Midterm exams start next week', date: 'Today' },
-            { type: 'warning', message: 'Assignment due tomorrow: Math Problem Set', date: 'Today' },
-            { type: 'success', message: 'Payment received for Semester 2', date: '2 days ago' },
-            { type: 'info', message: 'New grades posted for English', date: '3 days ago' }
-        ];
-        
-        notificationsContainer.innerHTML = notifications.map(notif => `
-            <div class="notification-item notification-${notif.type}">
-                <div class="notification-content">
-                    <p>${notif.message}</p>
-                    <small>${notif.date}</small>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    loadGradesPreview() {
-        const gradesContainer = document.getElementById('gradesPreview');
-        
-        const grades = [
-            { subject: 'Mathematics', grade: 'A', percentage: '95%' },
-            { subject: 'English', grade: 'B+', percentage: '88%' },
-            { subject: 'Science', grade: 'A-', percentage: '92%' },
-            { subject: 'History', grade: 'B', percentage: '85%' }
-        ];
-        
-        gradesContainer.innerHTML = `
-            <table class="grades-table">
-                <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Grade</th>
-                        <th>Percentage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${grades.map(grade => `
-                        <tr>
-                            <td>${grade.subject}</td>
-                            <td><span class="grade-badge grade-${grade.grade.charAt(0)}">${grade.grade}</span></td>
-                            <td>${grade.percentage}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
-
-    loadUpcomingAssignments() {
-        const assignmentsContainer = document.getElementById('upcomingAssignments');
-        
-        const assignments = [
-            { subject: 'Mathematics', assignment: 'Chapter 5 Problem Set', due: 'Tomorrow' },
-            { subject: 'English', assignment: 'Essay: Modern Literature', due: 'In 3 days' },
-            { subject: 'Science', assignment: 'Lab Report: Chemistry', due: 'Next Week' }
-        ];
-        
-        assignmentsContainer.innerHTML = assignments.map(assignment => `
-            <div class="assignment-item">
-                <div class="assignment-subject">${assignment.subject}</div>
-                <div class="assignment-title">${assignment.assignment}</div>
-                <div class="assignment-due">Due: ${assignment.due}</div>
-            </div>
-        `).join('');
-    }
-
-    showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('main > section').forEach(section => {
-            section.style.display = 'none';
-        });
-        
-        // Show selected section
-        document.getElementById(sectionId + 'Section').style.display = 'block';
-        
-        // Update active nav link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        document.querySelector(`[href="#${sectionId}"]`).classList.add('active');
-        
-        // Load section data
-        this.loadSectionData(sectionId);
-    }
-
-    loadSectionData(sectionId) {
-        switch(sectionId) {
-            case 'grades':
-                this.loadFullGrades();
-                break;
-            case 'subjects':
-                this.loadSubjects();
-                break;
-            case 'payments':
-                this.loadPayments();
-                break;
-            case 'documents':
-                this.loadDocuments();
-                break;
-        }
-    }
-
-    loadFullGrades() {
-        // Implementation for loading full grade history
-    }
-
-    loadSubjects() {
-        // Implementation for loading enrolled subjects
-    }
-
-    startEnrollment() {
-        // Show enrollment modal
-        document.getElementById('enrollmentModal').classList.add('active');
-    }
-
-    closeEnrollmentModal() {
-        document.getElementById('enrollmentModal').classList.remove('active');
-    }
-
-    nextEnrollmentStep(step) {
-        // Hide all steps
-        document.querySelectorAll('.process-step').forEach(step => {
-            step.classList.remove('active');
-        });
-        
-        // Show selected step
-        document.getElementById('step' + step).classList.add('active');
-    }
-
-    completeEnrollment() {
-        // Collect enrollment data
-        const enrollmentData = {
-            name: document.getElementById('enrollName').value,
-            email: document.getElementById('enrollEmail').value,
-            contact: document.getElementById('enrollContact').value,
-            birthDate: document.getElementById('enrollBirthDate').value
+    
+    // Update main title
+    const mainTitle = document.querySelector('.content-header h2');
+    if (mainTitle) {
+        const icons = {
+            'dashboard': 'fa-tachometer-alt',
+            'courses': 'fa-book-open',
+            'grades': 'fa-chart-line',
+            'reports': 'fa-file-alt',
+            'schedule': 'fa-calendar',
+            'financial': 'fa-dollar-sign',
+            'library': 'fa-book',
+            'settings': 'fa-cog'
         };
         
-        // Save enrollment
-        this.saveEnrollment(enrollmentData);
-        this.closeEnrollmentModal();
-        this.showAlert('Enrollment submitted successfully!', 'success');
+        const icon = icons[section] || 'fa-tachometer-alt';
+        mainTitle.innerHTML = `<i class="fas ${icon}"></i> ${capitalizeFirst(section)}`;
     }
-
-    saveEnrollment(data) {
-        // Save to localStorage
-        const enrollments = JSON.parse(localStorage.getItem('pendingEnrollments') || '[]');
-        enrollments.push({
-            ...data,
-            id: 'PEND-' + Date.now(),
-            date: new Date().toISOString(),
-            status: 'pending'
-        });
-        localStorage.setItem('pendingEnrollments', JSON.stringify(enrollments));
+    
+    // Load section-specific content
+    if (section === 'reports') {
+        loadReportsSection();
     }
+}
 
-    accessDiagnosticTest() {
-        window.open('https://cousinsuniversityadmissions.moodiy.com', '_blank');
-    }
-
-    requestTestAccount() {
-        this.showAlert('Test account request feature coming soon', 'info');
-    }
-
-    checkForNotifications() {
-        // Check for system notifications
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
-            this.requestNotificationPermission();
+// Load reports data from JSON
+async function loadReportsData() {
+    try {
+        const response = await fetch('data.json');
+        const data = await response.json();
+        
+        // Process reports data
+        if (data.reports && Array.isArray(data.reports)) {
+            updateReportsDisplay(data.reports);
         }
+    } catch (error) {
+        console.error('Error loading reports:', error);
+        showSystemMessage('Reports data temporarily unavailable. Please try again later.', 'warning');
     }
+}
 
-    requestNotificationPermission() {
-        if (Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    this.subscribeToNotifications();
-                }
-            });
-        }
-    }
-
-    subscribeToNotifications() {
-        // Subscribe to push notifications
-        // Implementation would depend on your notification service
-    }
-
-    showAlert(message, type = 'info') {
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type}`;
-        alert.innerHTML = `
-            <div class="alert-content">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
+// Update reports display
+function updateReportsDisplay(reports) {
+    const reportsList = document.querySelector('.reports-list');
+    if (!reportsList) return;
+    
+    // Clear existing items
+    reportsList.innerHTML = '';
+    
+    // Add report items
+    reports.forEach(report => {
+        const reportItem = document.createElement('div');
+        reportItem.className = 'report-item';
+        
+        const icon = report.type === 'transcript' ? 'fa-file-pdf' : 
+                    report.type === 'grades' ? 'fa-file-excel' : 
+                    'fa-file-certificate';
+        
+        reportItem.innerHTML = `
+            <i class="fas ${icon}"></i>
+            <div class="report-info">
+                <strong>${report.title}</strong>
+                <small>Updated: ${formatDate(report.updated)}</small>
             </div>
-            <button class="alert-close" onclick="this.parentElement.remove()">
-                <i class="fas fa-times"></i>
+            <button class="btn-download" data-report-id="${report.id}">
+                <i class="fas fa-download"></i>
             </button>
         `;
         
-        document.body.appendChild(alert);
+        reportsList.appendChild(reportItem);
+    });
+    
+    // Add download event listeners
+    document.querySelectorAll('.btn-download').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const reportId = this.getAttribute('data-report-id');
+            downloadReport(reportId);
+        });
+    });
+}
+
+// Download report function
+function downloadReport(reportId) {
+    showLoadingMessage(`Preparing report download...`);
+    
+    // Simulate download process
+    setTimeout(() => {
+        showSystemMessage('Report downloaded successfully!', 'success');
         
-        setTimeout(() => {
-            if (alert.parentElement) {
-                alert.remove();
-            }
-        }, 5000);
+        // In production, this would trigger actual file download
+        console.log(`Downloading report: ${reportId}`);
+    }, 1500);
+}
+
+// Load reports section
+function loadReportsSection() {
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) return;
+    
+    // Create reports section HTML
+    const reportsHTML = `
+        <div class="reports-section">
+            <div class="section-header">
+                <h3><i class="fas fa-file-archive"></i> Academic Reports Archive</h3>
+                <div class="section-actions">
+                    <button class="btn-primary" id="generateReport">
+                        <i class="fas fa-plus"></i> Generate New Report
+                    </button>
+                    <button class="btn-secondary" id="refreshReports">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="reports-filter">
+                <div class="filter-group">
+                    <label for="reportType">Report Type:</label>
+                    <select id="reportType">
+                        <option value="all">All Reports</option>
+                        <option value="transcript">Transcripts</option>
+                        <option value="grades">Grade Reports</option>
+                        <option value="enrollment">Enrollment Verification</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="reportYear">Academic Year:</label>
+                    <select id="reportYear">
+                        <option value="all">All Years</option>
+                        <option value="2024">2023-2024</option>
+                        <option value="2023">2022-2023</option>
+                        <option value="2022">2021-2022</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="reports-table-container">
+                <table class="reports-table">
+                    <thead>
+                        <tr>
+                            <th>Report Name</th>
+                            <th>Type</th>
+                            <th>Generated Date</th>
+                            <th>Size</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTableBody">
+                        <!-- Reports will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="reports-stats">
+                <div class="stat-card">
+                    <i class="fas fa-file-pdf"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">12</span>
+                        <span class="stat-label">Total Reports</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-calendar"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">2024</span>
+                        <span class="stat-label">Current Year</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-download"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">24</span>
+                        <span class="stat-label">Total Downloads</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Replace dashboard with reports section
+    const dashboardGrid = document.querySelector('.dashboard-grid');
+    if (dashboardGrid) {
+        dashboardGrid.style.display = 'none';
+    }
+    
+    const existingReports = document.querySelector('.reports-section');
+    if (existingReports) {
+        existingReports.remove();
+    }
+    
+    contentArea.insertAdjacentHTML('beforeend', reportsHTML);
+    
+    // Initialize reports section functionality
+    initializeReportsSection();
+}
+
+// Initialize reports section
+function initializeReportsSection() {
+    // Filter functionality
+    document.getElementById('reportType').addEventListener('change', filterReports);
+    document.getElementById('reportYear').addEventListener('change', filterReports);
+    
+    // Generate report button
+    document.getElementById('generateReport').addEventListener('click', generateNewReport);
+    
+    // Refresh button
+    document.getElementById('refreshReports').addEventListener('click', refreshReports);
+    
+    // Load reports into table
+    loadReportsTable();
+}
+
+// Load reports into table
+async function loadReportsTable() {
+    try {
+        const response = await fetch('data.json');
+        const data = await response.json();
+        
+        const tableBody = document.getElementById('reportsTableBody');
+        if (!tableBody || !data.reports) return;
+        
+        tableBody.innerHTML = '';
+        
+        data.reports.forEach(report => {
+            const row = document.createElement('tr');
+            
+            const sizeKB = Math.floor(Math.random() * 500) + 100; // Simulated size
+            
+            row.innerHTML = `
+                <td>
+                    <i class="fas ${getReportIcon(report.type)}"></i>
+                    <strong>${report.title}</strong>
+                </td>
+                <td><span class="report-type ${report.type}">${capitalizeFirst(report.type)}</span></td>
+                <td>${formatDate(report.updated)}</td>
+                <td>${sizeKB} KB</td>
+                <td>
+                    <button class="btn-icon" title="Download" onclick="downloadReport('${report.id}')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn-icon" title="View" onclick="viewReport('${report.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn-icon" title="Print" onclick="printReport('${report.id}')">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading reports table:', error);
     }
 }
 
-// Initialize portal
-document.addEventListener('DOMContentLoaded', () => {
-    window.portal = new SchoolPortal();
-});
-
-// Global functions for HTML onclick handlers
-function startEnrollment() {
-    window.portal?.startEnrollment();
-}
-
-function closeEnrollmentModal() {
-    window.portal?.closeEnrollmentModal();
-}
-
-function nextEnrollmentStep(step) {
-    window.portal?.nextEnrollmentStep(step);
-}
-
-function completeEnrollment() {
-    window.portal?.completeEnrollment();
-}
-
-function accessDiagnosticTest() {
-    window.portal?.accessDiagnosticTest();
-}
-
-function requestTestAccount() {
-    window.portal?.requestTestAccount();
-}
+// Setup event listeners
+function setupEventListeners() {
+    // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+    }
+    
+    // Notification bell
+    const notificationBell = document.querySelector('.notification-bell');
+    if (notificationBell) {
+        notificationBell.addEventListener('click', showNotifications);
+    }
+    
+    // Quick action buttons
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.querySelector('span').textContent;
+            handleQuickAction(action);
+        });
+    });
+    
+    // View all reports button
+   
