@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cousins University - School Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-university"></i> Cousins University</h1>
+                <p>School Management System - Complete Administration Portal</p>
+                <div class="system-status">
+                    <span id="storageStatus" class="badge badge-success">
+                        <i class="fas fa-database"></i> GitHub Storage: Active
+                    </span>
+                    <span id="dataStatus" class="badge badge-info">
+                        <i class="fas fa-sync"></i> Auto-save: Enabled
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button class="tab-btn" data-tab="registration">
+                <i class="fas fa-user-plus"></i> Registration
+            </button>
+            <button class="tab-btn" data-tab="testAccounts">
+                <i class="fas fa-vial"></i> Test Accounts
+            </button>
+            <button class="tab-btn" data-tab="diagnostic">
+                <i class="fas fa-stethoscope"></i> Diagnostic Test
+            </button>
+            <button class="tab-btn" data-tab="enrollment">
+                <i class="fas fa-graduation-cap"></i> Enrollment
+            </button>
+            <button class="tab-btn" data-tab="academic">
+                <i class="fas fa-book-open"></i> Academic
+            </button>
+            <button class="tab-btn" data-tab="treasury">
+                <i class="fas fa-money-check-alt"></i> Treasury
+            </button>
+            <button class="tab-btn" data-tab="reports">
+                <i class="fas fa-chart-bar"></i> Reports
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <div class="card">
+                    <h2 class="card-title">System Overview</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #e3f2fd;">
+                                <i class="fas fa-users" style="color: #2196f3;"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="totalStudents">0</h3>
+                                <p>Total Students</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #f3e5f5;">
+                                <i class="fas fa-user-check" style="color: #9c27b0;"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="activeRegistrations">0</h3>
+                                <p>Active Registrations</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #e8f5e9;">
+                                <i class="fas fa-vial" style="color: #4caf50;"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="testAccounts">0</h3>
+                                <p>Test Accounts</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #fff3e0;">
+                                <i class="fas fa-cash-register" style="color: #ff9800;"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="totalRevenue">₱0</h3>
+                                <p>Total Revenue</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card">
+                            <h2 class="card-title">Recent Activity</h2>
+                            <div class="activity-list" id="recentActivity">
+                                <!-- Activity items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <h2 class="card-title">Quick Actions</h2>
+                            <div class="quick-actions">
+                                <button class="btn btn-primary" onclick="openRegistrationForm()">
+                                    <i class="fas fa-user-plus"></i> New Registration
+                                </button>
+                                <button class="btn btn-success" onclick="openTestAccountModal()">
+                                    <i class="fas fa-vial"></i> Create Test Account
+                                </button>
+                                <button class="btn btn-warning" onclick="openDiagnosticModal()">
+                                    <i class="fas fa-stethoscope"></i> Enter Test Results
+                                </button>
+                                <button class="btn btn-info" onclick="openEnrollmentModal()">
+                                    <i class="fas fa-graduation-cap"></i> Enroll Student
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Registration Tab -->
+            <section id="registration" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">Student Registration</h2>
+                    <p>Register new students for diagnostic testing and enrollment</p>
+                    
+                    <form id="registrationForm" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fullName"><i class="fas fa-user"></i> Full Name *</label>
+                                <input type="text" id="fullName" required placeholder="Enter full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email"><i class="fas fa-envelope"></i> Email Address *</label>
+                                <input type="email" id="email" required placeholder="student@example.com">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="discord"><i class="fab fa-discord"></i> Discord Username *</label>
+                                <input type="text" id="discord" required placeholder="username#1234">
+                            </div>
+                            <div class="form-group">
+                                <label for="level"><i class="fas fa-graduation-cap"></i> Level to Enroll *</label>
+                                <select id="level" required>
+                                    <option value="">Select Level</option>
+                                    <option value="JHS">Junior High School (JHS)</option>
+                                    <option value="SHS">Senior High School (SHS)</option>
+                                    <option value="COLLEGE">College</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address"><i class="fas fa-map-marker-alt"></i> Address</label>
+                            <textarea id="address" rows="2" placeholder="Enter complete address"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact"><i class="fas fa-phone"></i> Contact Number</label>
+                            <input type="tel" id="contact" placeholder="+63 XXX XXX XXXX">
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Registration Fee:</strong> ₱50.00 diagnostic test fee required
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> Register Student
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="clearRegistrationForm()">
+                                <i class="fas fa-times"></i> Clear Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h2 class="card-title">Registration Records</h2>
+                    <div class="table-container">
+                        <table id="registrationsTable">
+                            <thead>
+                                <tr>
+                                    <th>Reg ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Level</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registrationsTableBody">
+                                <!-- Registrations will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Test Accounts Tab -->
+            <section id="testAccounts" class="tab-content">
+                <!-- Test Accounts content will be loaded here -->
+            </section>
+
+            <!-- Diagnostic Test Tab -->
+            <section id="diagnostic" class="tab-content">
+                <!-- Diagnostic Test content will be loaded here -->
+            </section>
+
+            <!-- Enrollment Tab -->
+            <section id="enrollment" class="tab-content">
+                <!-- Enrollment content will be loaded here -->
+            </section>
+
+            <!-- Academic Tab -->
+            <section id="academic" class="tab-content">
+                <!-- Academic content will be loaded here -->
+            </section>
+
+            <!-- Treasury Tab -->
+            <section id="treasury" class="tab-content">
+                <!-- Treasury content will be loaded here -->
+            </section>
+
+            <!-- Reports Tab -->
+            <section id="reports" class="tab-content">
+                <!-- Reports content will be loaded here -->
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Cousins University School Management System v1.0 | Data stored on GitHub</p>
+        </footer>
+    </div>
+
+    <!-- Modern Dialog/Modal Container -->
+    <div id="modalContainer"></div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
