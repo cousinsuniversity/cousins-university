@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cousins University - School Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .portal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .portal-nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .portal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .welcome-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .portal-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .portal-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .subject-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .grade-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .grade-A { background: #10b981; color: white; }
+        .grade-B { background: #3b82f6; color: white; }
+        .grade-C { background: #f59e0b; color: white; }
+        .grade-D { background: #ef4444; color: white; }
+        .grade-F { background: #6b7280; color: white; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="portal-header">
+        <div class="portal-container">
+            <h1><i class="fas fa-university"></i> Cousins University School Portal</h1>
+            <p>Welcome to your personalized academic portal</p>
+            <div id="studentWelcome"></div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="portal-nav">
+        <div class="portal-container">
+            <div class="nav-links">
+                <a href="#dashboard" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#grades" class="nav-link">
+                    <i class="fas fa-chart-line"></i> Grades
+                </a>
+                <a href="#subjects" class="nav-link">
+                    <i class="fas fa-book"></i> Subjects
+                </a>
+                <a href="#schedule" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i> Schedule
+                </a>
+                <a href="#payments" class="nav-link">
+                    <i class="fas fa-money-check-alt"></i> Payments
+                </a>
+                <a href="#documents" class="nav-link">
+                    <i class="fas fa-file-alt"></i> Documents
+                </a>
+                <a href="#support" class="nav-link">
+                    <i class="fas fa-question-circle"></i> Support
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="portal-container">
+        <!-- Login/Registration Section -->
+        <section id="loginSection" class="welcome-section">
+            <h2>Student Portal Access</h2>
+            <p>Login with your student credentials or start the enrollment process</p>
+            
+            <div class="portal-grid">
+                <div class="portal-card">
+                    <h3><i class="fas fa-sign-in-alt"></i> Existing Students</h3>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="studentId">Student ID</label>
+                            <input type="text" id="studentId" placeholder="Enter your Student ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="Enter your password">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-sign-in-alt"></i> Login to Portal
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="portal-card">
+                    <h3><i class="fas fa-user-plus"></i> New Students</h3>
+                    <p>Start your journey at Cousins University</p>
+                    <div class="enrollment-steps">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <span class="step-title">Register Online</span>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <span class="step-title">Take Diagnostic Test</span>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <span class="step-title">Complete Enrollment</span>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <span class="step-title">Access Portal</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-success btn-block" onclick="startEnrollment()">
+                        <i class="fas fa-play-circle"></i> Start Enrollment Process
+                    </button>
+                </div>
+                
+                <div class="portal-card">
+                    <h3><i class="fas fa-vial"></i> Diagnostic Test</h3>
+                    <p>Already have a test account?</p>
+                    <button class="btn btn-warning btn-block" onclick="accessDiagnosticTest()">
+                        <i class="fas fa-stethoscope"></i> Access Diagnostic Test
+                    </button>
+                    <hr>
+                    <p>Need a test account?</p>
+                    <button class="btn btn-info btn-block" onclick="requestTestAccount()">
+                        <i class="fas fa-user-plus"></i> Request Test Account
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section (shown after login) -->
+        <section id="dashboardSection" class="welcome-section" style="display: none;">
+            <div class="dashboard-header">
+                <h2>Welcome, <span id="studentNameDisplay"></span>!</h2>
+                <p>Student ID: <span id="studentIdDisplay"></span> | Grade Level: <span id="gradeLevelDisplay"></span></p>
+            </div>
+            
+            <div class="portal-grid">
+                <div class="portal-card">
+                    <h3><i class="fas fa-graduation-cap"></i> Academic Summary</h3>
+                    <div class="academic-summary">
+                        <div class="summary-item">
+                            <h4 id="currentGPA">0.00</h4>
+                            <p>Current GPA</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4 id="totalSubjects">0</h4>
+                            <p>Total Subjects</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4 id="attendanceRate">0%</h4>
+                            <p>Attendance Rate</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portal-card">
+                    <h3><i class="fas fa-calendar-check"></i> Today's Schedule</h3>
+                    <div id="todaysSchedule">
+                        <!-- Schedule will be loaded here -->
+                    </div>
+                </div>
+                
+                <div class="portal-card">
+                    <h3><i class="fas fa-bell"></i> Notifications</h3>
+                    <div id="studentNotifications">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grades Preview -->
+            <div class="portal-card">
+                <h3><i class="fas fa-chart-bar"></i> Recent Grades</h3>
+                <div id="gradesPreview"></div>
+            </div>
+            
+            <!-- Upcoming Assignments -->
+            <div class="portal-card">
+                <h3><i class="fas fa-tasks"></i> Upcoming Assignments</h3>
+                <div id="upcomingAssignments"></div>
+            </div>
+        </section>
+
+        <!-- Grades Section -->
+        <section id="gradesSection" style="display: none;">
+            <h2>Grades & Academic Records</h2>
+            <div class="portal-card">
+                <div class="grades-filter">
+                    <select id="semesterFilter" class="form-control">
+                        <option value="all">All Semesters</option>
+                        <option value="1">1st Semester</option>
+                        <option value="2">2nd Semester</option>
+                    </select>
+                </div>
+                <div id="gradesTable"></div>
+            </div>
+        </section>
+
+        <!-- Subjects Section -->
+        <section id="subjectsSection" style="display: none;">
+            <h2>Enrolled Subjects</h2>
+            <div id="subjectsList" class="portal-grid">
+                <!-- Subjects will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Enrollment Process Modal -->
+        <div id="enrollmentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>New Student Enrollment</h3>
+                    <button class="close-modal" onclick="closeEnrollmentModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="enrollment-process">
+                        <div class="process-step active" id="step1">
+                            <h4>Step 1: Personal Information</h4>
+                            <form id="personalInfoForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" id="enrollName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" id="enrollEmail" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Contact Number</label>
+                                        <input type="tel" id="enrollContact" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Birth Date</label>
+                                        <input type="date" id="enrollBirthDate" required>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="nextEnrollmentStep(2)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="process-step" id="step2">
+                            <h4>Step 2: Educational Background</h4>
+                            <!-- Educational background form -->
+                            <button type="button" class="btn btn-secondary" onclick="nextEnrollmentStep(1)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="nextEnrollmentStep(3)">
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="process-step" id="step3">
+                            <h4>Step 3: Program Selection</h4>
+                            <!-- Program selection form -->
+                            <button type="button" class="btn btn-secondary" onclick="nextEnrollmentStep(2)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="completeEnrollment()">
+                                Complete Enrollment <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="portal-container">
+            <p>Cousins University School Portal | All grades and records are maintained here</p>
+            <p>Need help? Contact support: portal-support@cousinsuniversity.edu</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="portal.js"></script>
+</body>
+</html>
